@@ -1,0 +1,4 @@
+[submodule "themes/redefine"]  
+    path = themes/redefine  
+    url = https://github.com/EvanNotFound/hexo-theme-redefine.git  
+    branch = main  # 或者其他分支名
