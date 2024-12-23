@@ -29,7 +29,7 @@ defaults:
   # Site logo
   logo: 
   # Site avatar
-  avatar: /images/redefine-avatar.svg
+  avatar: /images/base.jpg
 # IMAGE CONFIGURATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end
 
 
@@ -196,9 +196,6 @@ navbar:
     pages: 1000px #other pages
   # Navbar links
   links:
-    Home: 
-      path: / 
-      icon: fa-regular fa-house # can be empty
     文章历史: 
       path: /archives 
       icon: fa-regular fa-archive # can be empty
