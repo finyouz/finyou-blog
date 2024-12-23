@@ -1,0 +1,8 @@
+- links_category: 朋友
+  has_thumbnail: true
+  list:
+      - name: 许大帅哥
+        link: https://dawallishi.github.io/dawalish.github.io/
+        description: 这是一个高手
+        avatar: https://evan.beee.top/avatar.png
+        thumbnail: https://evan.beee.top/avatar.png # has_thumbnail 为 true 时才需要
