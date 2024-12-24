@@ -2,6 +2,7 @@
 layout: post
 title: 使用阿里矢量图标库在uniapp项目中使用字体图标
 date: 2024-12-21 13:45:14
+tags: [uniapp,字体图标,阿里矢量图标库]
 ---
 
 
