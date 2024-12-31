@@ -355,3 +355,139 @@ Component({
 })
 ```
 > 自定义 tabBar 的 pageLifetime 不会触发。
+
+## behaviors
+>每个 behavior 可以包含一组属性、数据、生命周期函数和方法。组件引用它时，它的属性、数据和方法会被合并到组件中，生命周期函数也会在对应时机被调用。 每个组件可以引用多个 behavior ，behavior 也可以引用其它 behavior 。
+
+```html
+//index.wxml
+ <my-component my-behavior-property="behavior-property" my-property="my-property">
+</my-component>
+```
+
+```html
+//component.wxml
+<button bindtap="myBehaviorMethod">点击触发 behavior 方法</button>
+<button bindtap="myMethod">点击触发 component 方法</button>
+```
+
+```js
+// my-behavior.js
+module.exports = Behavior({
+  behaviors: [],
+  properties: {
+    myBehaviorProperty: {
+      type: String
+    }
+  },
+  data: {
+    myBehaviorData: 'my-behavior-data'
+  },
+  created: function () {
+    console.log('[my-behavior] created')
+  },
+  attached: function () {
+    console.log('[my-behavior] attached')
+  },
+  ready: function () {
+    console.log('[my-behavior] ready')
+  },
+
+  methods: {
+    myBehaviorMethod: function () {
+      console.log('[my-behavior] log by myBehaviorMehtod')
+    },
+  }
+})
+```
+
+```js
+// component.js
+var myBehavior = require('my-behavior')
+Component({
+  behaviors: [myBehavior],
+  properties: {
+    myProperty: {
+      type: String
+    }
+  },    
+  data: {
+    myData: 'my-component-data'
+  },
+  created: function () {
+    console.log('[my-component] created')
+  },
+  attached: function () { 
+    console.log('[my-component] attached')
+  },
+  ready: function () {
+    console.log('[my-component] ready')
+  },
+  methods: {
+    myMethod: function () {
+      console.log('[my-component] log by myMethod')
+    },
+  }
+})
+```
+
+## 组件间的关系
+```wxml
+<custom-ul>
+  <custom-li> item 1 </custom-li>
+  <custom-li> item 2 </custom-li>
+</custom-ul>
+```
+>custom-ul 和 custom-li 都是自定义组件，它们有相互间的关系,微信提供了 relations 定义段，可以解决这样的问题。
+
+```js
+// path/to/custom-ul.js
+Component({
+  relations: {
+    './custom-li': {
+      type: 'child', // 关联的目标节点应为子节点
+      linked: function(target) {
+        // 每次有custom-li被插入时执行，target是该节点实例对象，触发在该节点attached生命周期之后
+      },
+      linkChanged: function(target) {
+        // 每次有custom-li被移动后执行，target是该节点实例对象，触发在该节点moved生命周期之后
+      },
+      unlinked: function(target) {
+        // 每次有custom-li被移除时执行，target是该节点实例对象，触发在该节点detached生命周期之后
+      }
+    }
+  },
+  methods: {
+    _getAllLi: function(){
+      // 使用getRelationNodes可以获得nodes数组，包含所有已关联的custom-li，且是有序的
+      var nodes = this.getRelationNodes('path/to/custom-li')
+    }
+  },
+  ready: function(){
+    this._getAllLi()
+  }
+})
+```
+```js
+// path/to/custom-li.js
+Component({
+  relations: {
+    './custom-ul': {
+      type: 'parent', // 关联的目标节点应为父节点
+      linked: function(target) {
+        // 每次被插入到custom-ul时执行，target是custom-ul节点实例对象，触发在attached生命周期之后
+      },
+      linkChanged: function(target) {
+        // 每次被移动后执行，target是custom-ul节点实例对象，触发在moved生命周期之后
+      },
+      unlinked: function(target) {
+        // 每次被移除时执行，target是custom-ul节点实例对象，触发在detached生命周期之后
+      }
+    }
+  }
+})
+```
+>先执行ul种的linked,后执行li的linked
+注意：必须在两个组件定义中都加入relations定义,否则不会生效。
+
+[具体参数](https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/relations.html)
