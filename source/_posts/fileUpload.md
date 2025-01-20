@@ -204,3 +204,12 @@ let res = await axios.post('http://localhost:3000/upload', fromData, {
 //上传完成后将进度条归零
 document.querySelector('.va').style.width = '0%'
 ```
+
+
+## 4.多文件管控
+
+## 5.拖拽上传
+
+## 6.大文件上传（切片上传和断点续传）
+
+## 7.阿里云上传
