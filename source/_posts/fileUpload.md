@@ -178,4 +178,29 @@ app.listen(port, () => {
 });
 ```
 
-## 3.
+## 3.进度管控
+
+>显示文件上传的进度
+
+```html
+<!--通过改变va的百分比来显示进度条的变化-->
+<div class="contnent">
+  <div class="va"></div>
+</div>
+```
+>在axios中使用onUploadProgress来监听上传的进度
+
+```js
+let res = await axios.post('http://localhost:3000/upload', fromData, {
+    onUploadProgress(ev){
+        let {loaded,total} = ev
+        //total 总字节数
+        //loaded 已上传的字节数
+
+        //计算百分比
+        document.querySelector('.va').style.width = (loaded/total*100)+'%'
+    }
+})
+//上传完成后将进度条归零
+document.querySelector('.va').style.width = '0%'
+```
