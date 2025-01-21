@@ -180,7 +180,7 @@ app.listen(port, () => {
 
 ## 3.进度管控
 
->显示文件上传的进度
+>显示文件上传的进度,其实就是监听上传的进度来改变子元素的宽度
 
 ```html
 <!--通过改变va的百分比来显示进度条的变化-->
@@ -206,9 +206,31 @@ document.querySelector('.va').style.width = '0%'
 ```
 
 
-## 4.多文件管控
+## 4.多文件进度管控
 
 ## 5.拖拽上传
+
+>监听文件进入指定容器时，放下鼠标的事件
+
+```js
+//当文件进入指定容器时，触发
+container.addEventListener('dragenter', function (e) {
+    console.log('进入');
+})
+//当文件离开指定容器时，触发
+container.addEventListener('dragleave', function (e) {
+  console.log('离开');
+})
+
+container.addEventListener('dragover', function (e) {
+      e.preventDefault();
+})
+
+container.addEventListener('drop', function (e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+})
+```
 
 ## 6.大文件上传（切片上传和断点续传）
 
