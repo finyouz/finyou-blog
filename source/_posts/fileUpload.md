@@ -208,6 +208,35 @@ document.querySelector('.va').style.width = '0%'
 
 ## 4.多文件进度管控
 
+>输入框支持多选
+```html
+<input type="file" multiple>
+```
+>多文件上传,遍历数组的时候请求
+
+```js
+input.addEventListener('change',(e)=>{
+    let fileList = e.target.files
+    fileList = fileList.map((item)=>{
+        let fromData = new FormData();
+        fromData.append('file',item)
+        return axios.post('/upload',fromData).then((res)=>{
+          console.log('上传成功');
+          
+        })    
+    })
+
+    Promise.all(fileList).then((res)=>{
+      console.log('所有文件上传成功');
+    })
+})
+
+
+
+```
+
+
+
 ## 5.拖拽上传
 
 >监听文件进入指定容器时，放下鼠标的事件
