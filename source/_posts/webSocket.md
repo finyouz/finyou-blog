@@ -75,3 +75,261 @@ setInterval(()=>{
 - 全双工:全双工通信允许数据同时在两个方向上传输，即有两个信道，因此允许同时进行双向传
 
 - 半双工:但某一时刻只允许信号在一个信道上单向传输。因此，半双工通信实际上是一种可切换方向的单工通信。
+
+
+``实现一个简易聊天室``
+
+> 前端部分
+```vue
+<script setup>
+import io from 'socket.io-client'
+import {ref,onMounted} from 'vue'
+const messageArr = ref([])
+const message = ref('')
+let socket = io('http://192.168.2.23:3000')
+let userId = ref('')
+const sendMessageRef = ref(null)
+function init() {
+    //初始化
+
+    //监听服务器发送的消息
+    socket.on('connection', (sockets) => {
+       console.log("连接成功");
+       
+       
+    })
+
+
+    socket.on('message', (data) => {
+        
+       if(data.type === 'init'){
+         alert(data.message)
+       }else{
+         messageArr.value.push(data)
+       }
+       
+   
+    })
+}
+
+
+const handleSend = () => {
+  if(!message.value.trim()){
+      alert('发送信息不能为空')
+      return
+  }
+   let data = {
+       message:message.value.trim(),
+       userId:userId.value,
+       type:'message'
+   }
+    socket.emit('message',data)
+    message.value = '' 
+}
+onMounted(()=>{
+    userId.value =`用户${parseInt(Math.random() * 100 )}`    
+    init()
+})
+</script>
+
+<template> 
+    <div class="container">
+        <div class="content">
+            <div class="top">
+            </div>
+
+            <div class="sendMessage" ref="sendMessageRef">
+                <div class="item" v-for="item in messageArr" :key="item.userId">
+                    <div class="item-left" v-if="item.userId !== userId">
+                        <div class="avatar">
+                            {{ item.userId }}
+                        </div>
+                        <div class="message">
+                           {{ item.message }}
+                        </div>
+                    </div>
+                    <div class="item-right" v-else>
+                        <div class="message">
+                            {{ item.message  }}
+                        </div>
+                        <div class="avatar">
+                           {{ item.userId }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <input type="text" class="input" v-model="message" />
+                <button class="btn" @click="handleSend">发送</button>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+<style scoped>
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    .content {
+        width: 800px;
+        height: 800px;
+        background-color: aqua;
+
+        .top {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+
+        .sendMessage {
+            height: 700px;
+            overflow: auto;
+            .item{
+               
+                display: flex;
+                flex-direction: column;
+
+                .item-left{
+                    margin: 20px;
+                    display: flex;
+                    align-items: center;
+                    .avatar{
+                       width: 100px;
+                       height: 100px;
+                       border-radius: 50%;
+                       display: flex;
+                          justify-content: center;
+                          align-items: center;
+                          background-color: #f5f5f5;
+                    };
+
+                    .message{
+                        margin: 0 20px;
+                        height: 50px;
+                        display: flex;
+                        align-items: center;
+                        background-color: #f5f5f5;
+                        padding: 20px;
+                    }
+                }
+
+                .item-right{
+                    align-self: flex-end;
+                    margin: 20px;
+                    display: flex;
+                    align-items: center;
+                    .avatar{
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        display: flex;
+                          justify-content: center;
+                          align-items: center;
+                          background-color: #f5f5f5;
+                     };
+ 
+                     .message{
+                         margin: 0 20px;
+                         height: 50px;
+                         display: flex;
+                         align-items: center;
+                         background-color: #f5f5f5;
+                         padding: 20px;
+                     }
+                }
+            }
+        }
+
+        .footer {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 50px;
+
+            .input {
+                height: 100%;
+                width: 700px;
+                font-size: 50px;
+                padding: 0 !important;
+            }
+
+            .btn {
+                font-size: 20px;
+                width: 100px;
+                height: 100%;
+            }
+        }
+    }
+}
+</style>
+
+```
+
+
+> 后端部分
+
+```js
+// server.js
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+// 创建 Express 应用和 HTTP 服务器
+const app = express();
+const server = http.createServer(app);
+
+// 创建 Socket.IO 实例
+const io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+});
+
+
+
+io.on('connection', (socket) => {
+    console.log('用户已连接',socket.id);
+    
+    socket.send({
+        type: "init",
+        message: "欢迎连接"
+    })
+    
+    socket.on('message', (msg) => {
+        // 广播给所有用户
+       
+        
+       io.emit('message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('用户已断开连接'); 
+    })
+
+})
+
+// 提供静态文件（HTML、CSS、JS）
+app.use(express.static('public'));
+ 
+
+
+// 启动服务器，监听 3000 端口
+server.listen(3000, () => {
+    console.log('服务器已启动，访问 http://localhost:3000');
+});
+
+
+```
