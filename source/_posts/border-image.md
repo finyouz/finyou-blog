@@ -1,7 +1,7 @@
 ---
 title: border-image
 date: 2025-03-09 15:06:56
-tags:
+tags:[css]
 ---
 
 # border-image(边框图片)
