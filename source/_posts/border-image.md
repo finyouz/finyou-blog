@@ -1,7 +1,7 @@
 ---
 title: border-image
 date: 2025-03-09 15:06:56
-tags:[css]
+tags: [css]
 ---
 
 # border-image(边框图片)
@@ -60,7 +60,7 @@ border-image-slice: 7 12 14 5;
 border-image-slice: 10% fill 7 12;
 ```
 
-[案例]([border-image-slice](https://codepen.io/siwuxie/pen/NWQgjJz))
+[案例](https://codepen.io/siwuxie/pen/NWQgjJz)
 
 ## 3.border-image-width.
 
