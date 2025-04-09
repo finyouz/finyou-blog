@@ -137,3 +137,55 @@ export default function Demo2() {
 ```
 
 > 在react16中,setState在合成事件，周期函数中是异步在定时器是同步的
+
+
+### useState函数更新和优化机制
+
+#### 函数更新
+> React 会对同一个事件循环内的多个 setState（或 setCount）进行批量合并[更新队列]，最终只执行一次更新。因此，即使你循环调用 setCount 100 次，React 只会计算最后一次的结果。
+```jsx
+const handleAdd = () => {
+
+    for (let i = 0; i < 100; i++) {      
+        setCount(count + 1)
+    }
+  }
+//页面更新一次
+```
+
+> 第一次更新：由 flushSync 强制同步执行 setCount，count 从 0 → 1。\
+第二次更新：React 可能由于某些内部优化（如事件系统或 flushSync 的调度机制）再触发一次更新检查。
+```jsx
+const handleAdd = () => {
+
+    for (let i = 0; i < 100; i++) {
+      flushSync(() => {
+        setCount(count + 1)
+      })
+    }
+  }
+//页面更新二次
+```
+
+> 页面重新渲染一个，count增加0到100
+```jsx
+const handleAdd = () => {
+    for (let i = 0; i < 100; i++) {
+      setCount((prvCount)=>prvCount + 1)
+    }   
+}
+//页面更新一次
+```
+
+> useState 初始化为函数时,为避免重复创建初始状态\
+你传递的是 createInitialTodos 函数本身，而不是 createInitialTodos() 调用该函数的结果。如果将函数传递给 useState，React 仅在初始化期间调用它。
+
+```jsx
+ const [todos, setTodos] = useState(createInitialTodos);
+```
+
+#### 优化机制
+
+- 每一次修改状态值的时候，会拿最新要修改的值和之前的状态值做比较【基于Object.is做比较】
+
+- 如果值没有发生变化，那么就修改状态，也不会让视图更新。类似于PureComponent,在shouldComponentUpdate做了浅比较
